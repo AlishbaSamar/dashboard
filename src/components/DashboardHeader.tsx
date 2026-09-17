@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { RefreshButton } from "./RefreshButton";
 
 export function DashboardHeader({ lastUpdated }: { lastUpdated: Date }) {
@@ -8,11 +9,14 @@ export function DashboardHeader({ lastUpdated }: { lastUpdated: Date }) {
 
   return (
     <header className="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <h1 className="text-xl font-semibold text-text-primary">Webinar Dashboard</h1>
-        <p className="text-sm text-text-secondary mt-0.5">
-          Registrants, attendance, and watch time from eWebinar.
-        </p>
+      <div className="flex items-center gap-3">
+        <Image src="/logo.png" alt="Lead Every Day" width={93} height={36} priority />
+        <div>
+          <h1 className="text-xl font-semibold text-text-primary">Webinar Dashboard</h1>
+          <p className="text-sm text-text-secondary mt-0.5">
+            Registrants, attendance, and watch time from eWebinar.
+          </p>
+        </div>
       </div>
       <div className="flex items-center gap-3">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-page-plane ring-1 ring-[var(--border-hairline)] px-2.5 py-1 text-xs font-medium text-text-secondary">
