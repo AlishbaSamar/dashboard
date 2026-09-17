@@ -15,6 +15,7 @@ import { RegistrantsTrendChart } from "@/components/RegistrantsTrendChart";
 import { WebinarBreakdownTable } from "@/components/WebinarBreakdownTable";
 import { AttendanceStateChart } from "@/components/AttendanceStateChart";
 import { TrafficSourceCard } from "@/components/TrafficSourceCard";
+import { RegistrantsTable } from "@/components/RegistrantsTable";
 
 function parseRange(value: string | string[] | undefined): Range {
   if (value === "7d" || value === "30d" || value === "all") return value;
@@ -55,10 +56,12 @@ export default async function DashboardPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <WebinarBreakdownTable rows={byWebinar} />
+          <WebinarBreakdownTable rows={byWebinar} range={range} />
         </div>
         <TrafficSourceCard data={bySource} />
       </div>
+
+      <RegistrantsTable registrants={registrants} showWebinarColumn />
     </div>
   );
 }

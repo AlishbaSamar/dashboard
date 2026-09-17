@@ -1,11 +1,12 @@
-import type { WebinarRow } from "@/lib/metrics";
+import Link from "next/link";
+import type { Range, WebinarRow } from "@/lib/metrics";
 import { Card } from "./Card";
 
 function formatPercent(n: number): string {
   return `${n.toFixed(1)}%`;
 }
 
-export function WebinarBreakdownTable({ rows }: { rows: WebinarRow[] }) {
+export function WebinarBreakdownTable({ rows, range }: { rows: WebinarRow[]; range: Range }) {
   return (
     <Card title="By webinar" subtitle="Performance broken down per webinar" className="overflow-x-auto">
       {rows.length === 0 ? (
@@ -24,7 +25,14 @@ export function WebinarBreakdownTable({ rows }: { rows: WebinarRow[] }) {
           <tbody>
             {rows.map((row) => (
               <tr key={row.webinarId} className="border-b border-[var(--gridline)] last:border-0">
-                <td className="py-2.5 pr-4 text-text-primary">{row.webinarTitle}</td>
+                <td className="py-2.5 pr-4 text-text-primary">
+                  <Link
+                    href={`/webinar/${row.webinarId}?range=${range}`}
+                    className="hover:underline hover:text-series-1"
+                  >
+                    {row.webinarTitle}
+                  </Link>
+                </td>
                 <td className="py-2.5 pr-4 text-right tabular-nums text-text-primary">{row.registrants}</td>
                 <td className="py-2.5 pr-4 text-right tabular-nums text-text-secondary">{row.attended}</td>
                 <td className="py-2.5 pr-4 text-right tabular-nums text-text-secondary">
