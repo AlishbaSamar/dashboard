@@ -9,6 +9,25 @@ export function filterByRange(registrants: Registrant[], range: Range): Registra
   return registrants.filter((r) => new Date(r.registeredTime).getTime() >= cutoff);
 }
 
+/** The equal-length window immediately preceding the current range, for comparison. `null` for "all" (no natural prior window). */
+export function filterByPreviousRange(registrants: Registrant[], range: Range): Registrant[] | null {
+  if (range === "all") return null;
+  const days = range === "7d" ? 7 : 30;
+  const now = Date.now();
+  const start = now - days * 2 * 24 * 60 * 60 * 1000;
+  const end = now - days * 24 * 60 * 60 * 1000;
+  return registrants.filter((r) => {
+    const t = new Date(r.registeredTime).getTime();
+    return t >= start && t < end;
+  });
+}
+
+/** Percent change from previous to current, or null when previous is 0 (undefined/meaningless change). */
+export function percentChange(current: number, previous: number): number | null {
+  if (previous === 0) return null;
+  return ((current - previous) / previous) * 100;
+}
+
 const ATTENDED_STATES: AttendanceState[] = ["Joined", "Watched"];
 
 export type Kpis = {

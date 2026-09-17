@@ -26,6 +26,36 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
 }
 
+function csvCell(value: string): string {
+  if (/[",\n]/.test(value)) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
+function downloadRegistrantsCsv(registrants: Registrant[], showWebinarColumn: boolean) {
+  const headers = ["Name", "Email", ...(showWebinarColumn ? ["Webinar"] : []), "Registered", "State", "Watched %"];
+  const rows = registrants.map((r) => [
+    registrantName(r),
+    r.email,
+    ...(showWebinarColumn ? [r.webinarTitle] : []),
+    r.registeredTime,
+    STATE_LABEL[r.state] ?? r.state,
+    typeof r.totalWatchedPercent === "number" ? String(r.totalWatchedPercent) : "",
+  ]);
+  const csv = [headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "registrants.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 function SortButton({
   label,
   active,
@@ -101,22 +131,45 @@ export function RegistrantsTable({
 
   return (
     <Card title="Registrants" subtitle={`${registrants.length} people in this period`} className="overflow-x-auto">
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          setPage(0);
-        }}
-        placeholder="Search by name or email"
-        className="mb-4 w-full max-w-sm rounded-md ring-1 ring-[var(--border-hairline)] bg-page-plane px-3 py-1.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-[var(--series-1)]"
-      />
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(0);
+          }}
+          placeholder="Search by name or email"
+          className="w-full sm:max-w-sm rounded-md ring-1 ring-[var(--border-hairline)] bg-page-plane px-3 py-1.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-[var(--series-1)]"
+        />
+        <button
+          type="button"
+          onClick={() => downloadRegistrantsCsv(sorted, showWebinarColumn)}
+          disabled={sorted.length === 0}
+          className="inline-flex items-center gap-1.5 rounded-md ring-1 ring-[var(--border-hairline)] px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-page-plane transition-colors disabled:opacity-40"
+        >
+          <svg
+            className="h-3.5 w-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 3v12" />
+            <path d="M7 10l5 5 5-5" />
+            <path d="M4 19h16" />
+          </svg>
+          Export CSV
+        </button>
+      </div>
 
       {pageRows.length === 0 ? (
         <p className="text-sm text-text-muted py-10 text-center">No registrants match.</p>
       ) : (
         <>
-          <table className="w-full text-sm">
+          <table className="w-full text-sm whitespace-nowrap">
             <thead>
               <tr className="text-left text-xs text-text-muted border-b border-[var(--gridline)]">
                 <th className="py-2 pr-4">

@@ -1,6 +1,7 @@
 import { getAllRegistrants } from "@/lib/ewebinar";
 import {
   computeKpis,
+  filterByPreviousRange,
   filterByRange,
   groupByDay,
   groupByState,
@@ -22,6 +23,12 @@ function parseRange(value: string | string[] | undefined): Range {
   return "30d";
 }
 
+const PERIOD_LABEL: Record<Range, string | undefined> = {
+  "7d": "previous 7 days",
+  "30d": "previous 30 days",
+  all: undefined,
+};
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -34,18 +41,21 @@ export default async function DashboardPage({
   const registrants = filterByRange(allRegistrants, range);
 
   const kpis = computeKpis(registrants);
+  const previousWindow = filterByPreviousRange(allRegistrants, range);
+  const previousKpis = previousWindow ? computeKpis(previousWindow) : null;
+  const periodLabel = PERIOD_LABEL[range];
   const daily = groupByDay(registrants);
   const byWebinar = groupByWebinar(registrants);
   const byState = groupByState(registrants);
   const bySource = groupByUtmSource(registrants);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
+    <div className="mx-auto min-w-0 max-w-6xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
       <DashboardHeader lastUpdated={new Date()} />
 
       <RangeFilter active={range} />
 
-      <KpiCards kpis={kpis} />
+      <KpiCards kpis={kpis} previousKpis={previousKpis} periodLabel={periodLabel} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">

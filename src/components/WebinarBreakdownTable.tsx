@@ -12,7 +12,7 @@ export function WebinarBreakdownTable({ rows, range }: { rows: WebinarRow[]; ran
       {rows.length === 0 ? (
         <p className="text-sm text-text-muted py-10 text-center">No data in this period.</p>
       ) : (
-        <table className="w-full text-sm">
+        <table className="w-full text-sm whitespace-nowrap">
           <thead>
             <tr className="text-left text-xs text-text-muted border-b border-[var(--gridline)]">
               <th className="py-2 pr-4 font-medium">Webinar</th>
