@@ -1,12 +1,7 @@
 import { Logo } from "./Logo";
-import { RefreshButton } from "./RefreshButton";
+import { LiveStatus } from "./LiveStatus";
 
-export function DashboardHeader({ lastUpdated }: { lastUpdated: Date }) {
-  const timeLabel = lastUpdated.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
+export function DashboardHeader() {
   return (
     <header className="flex flex-wrap items-center justify-between gap-4">
       <div className="flex items-center gap-3">
@@ -18,16 +13,7 @@ export function DashboardHeader({ lastUpdated }: { lastUpdated: Date }) {
           </p>
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-page-plane ring-1 ring-[var(--border-hairline)] px-2.5 py-1 text-xs font-medium text-text-secondary">
-          <span
-            className="h-1.5 w-1.5 rounded-full bg-status-good"
-            aria-hidden
-          />
-          Live &middot; updated {timeLabel}
-        </span>
-        <RefreshButton />
-      </div>
+      <LiveStatus />
     </header>
   );
 }

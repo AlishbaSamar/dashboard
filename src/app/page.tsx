@@ -51,7 +51,7 @@ export default async function DashboardPage({
 
   return (
     <div className="mx-auto min-w-0 max-w-6xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
-      <DashboardHeader lastUpdated={new Date()} />
+      <DashboardHeader />
 
       <RangeFilter active={range} />
 
