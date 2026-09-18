@@ -8,10 +8,11 @@ function formatPercent(n: number): string {
 
 export function WebinarBreakdownTable({ rows, range }: { rows: WebinarRow[]; range: Range }) {
   return (
-    <Card title="By webinar" subtitle="Performance broken down per webinar" className="overflow-x-auto">
+    <Card title="By webinar" subtitle="Performance broken down per webinar">
       {rows.length === 0 ? (
         <p className="text-sm text-text-muted py-10 text-center">No data in this period.</p>
       ) : (
+        <div className="overflow-x-auto">
         <table className="w-full text-sm whitespace-nowrap">
           <thead>
             <tr className="text-left text-xs text-text-muted border-b border-[var(--gridline)]">
@@ -45,6 +46,7 @@ export function WebinarBreakdownTable({ rows, range }: { rows: WebinarRow[]; ran
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </Card>
   );

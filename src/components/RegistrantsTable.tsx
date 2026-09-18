@@ -151,7 +151,7 @@ export function RegistrantsTable({
   }
 
   return (
-    <Card title="Registrants" subtitle={`${registrants.length} people in this period`} className="overflow-x-auto">
+    <Card title="Registrants" subtitle={`${registrants.length} people in this period`}>
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <input
           type="text"
@@ -190,6 +190,7 @@ export function RegistrantsTable({
         <p className="text-sm text-text-muted py-10 text-center">No registrants match.</p>
       ) : (
         <>
+          <div className="overflow-x-auto">
           <table className="w-full text-sm whitespace-nowrap">
             <thead>
               <tr className="text-left text-xs text-text-muted border-b border-[var(--gridline)]">
@@ -245,6 +246,7 @@ export function RegistrantsTable({
               ))}
             </tbody>
           </table>
+          </div>
 
           <div className="mt-4 flex items-center justify-between text-xs text-text-muted">
             <span>
