@@ -60,6 +60,12 @@ export type Registrant = {
   city?: string;
   deviceTypeWhenRegistered?: string;
   deviceTypeWhenWatching?: string;
+  // Custom registration fields — property names vary per webinar's form config,
+  // so both variants are read with a fallback wherever job title/company are shown.
+  role?: string;
+  role_1?: string;
+  company?: string;
+  company_1?: string;
 };
 
 type RegistrantsResponse = { registrants: Registrant[]; nextCursor?: string | null };

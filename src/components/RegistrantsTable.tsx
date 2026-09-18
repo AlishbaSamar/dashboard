@@ -21,6 +21,16 @@ function registrantName(r: Registrant): string {
   return name || "(no name)";
 }
 
+// Custom field property names (role/role_1, company/company_1) vary per webinar's
+// registration form, so fall back across both variants.
+function jobTitle(r: Registrant): string {
+  return r.role?.trim() || r.role_1?.trim() || "";
+}
+
+function companyName(r: Registrant): string {
+  return r.company?.trim() || r.company_1?.trim() || "";
+}
+
 function formatDate(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
@@ -34,10 +44,21 @@ function csvCell(value: string): string {
 }
 
 function downloadRegistrantsCsv(registrants: Registrant[], showWebinarColumn: boolean) {
-  const headers = ["Name", "Email", ...(showWebinarColumn ? ["Webinar"] : []), "Registered", "State", "Watched %"];
+  const headers = [
+    "Name",
+    "Email",
+    "Job Title",
+    "Company",
+    ...(showWebinarColumn ? ["Webinar"] : []),
+    "Registered",
+    "State",
+    "Watched %",
+  ];
   const rows = registrants.map((r) => [
     registrantName(r),
     r.email,
+    jobTitle(r),
+    companyName(r),
     ...(showWebinarColumn ? [r.webinarTitle] : []),
     r.registeredTime,
     STATE_LABEL[r.state] ?? r.state,
@@ -181,6 +202,8 @@ export function RegistrantsTable({
                   />
                 </th>
                 <th className="py-2 pr-4 font-medium">Email</th>
+                <th className="py-2 pr-4 font-medium">Job Title</th>
+                <th className="py-2 pr-4 font-medium">Company</th>
                 {showWebinarColumn && <th className="py-2 pr-4 font-medium">Webinar</th>}
                 <th className="py-2 pr-4">
                   <SortButton
@@ -206,6 +229,8 @@ export function RegistrantsTable({
                 <tr key={r.id} className="border-b border-[var(--gridline)] last:border-0">
                   <td className="py-2.5 pr-4 text-text-primary">{registrantName(r)}</td>
                   <td className="py-2.5 pr-4 text-text-secondary">{r.email}</td>
+                  <td className="py-2.5 pr-4 text-text-secondary">{jobTitle(r) || "—"}</td>
+                  <td className="py-2.5 pr-4 text-text-secondary">{companyName(r) || "—"}</td>
                   {showWebinarColumn && (
                     <td className="py-2.5 pr-4 text-text-secondary">{r.webinarTitle}</td>
                   )}
