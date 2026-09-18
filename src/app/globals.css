@@ -90,3 +90,14 @@ body {
 :root[data-theme="dark"] .logo-dark {
   display: block;
 }
+
+/* Hides the scrollbar on wide-table scroll containers while keeping
+   touch/trackpad horizontal scrolling fully functional. */
+.scrollbar-none {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* old Edge/IE */
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
