@@ -1,22 +1,55 @@
 const BASE_URL = "https://api.ewebinar.com/v2";
 
+/** Thrown for any failed eWebinar API call. `message` is safe to show to a viewer. */
+export class EwebinarApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status?: number
+  ) {
+    super(message);
+    this.name = "EwebinarApiError";
+  }
+}
+
 function getToken(): string {
   const token = process.env.EWEBINAR_API_TOKEN;
   if (!token) {
-    throw new Error("EWEBINAR_API_TOKEN is not set in the environment");
+    throw new EwebinarApiError(
+      "The dashboard isn't configured with an eWebinar API token yet. Set EWEBINAR_API_TOKEN and redeploy."
+    );
   }
   return token;
 }
 
 async function ewebinarFetch<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { Authorization: `Bearer ${getToken()}` },
-    next: { revalidate: 300 },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+      next: { revalidate: 300 },
+    });
+  } catch {
+    throw new EwebinarApiError("Couldn't reach eWebinar. Check your connection and try again.");
+  }
 
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      throw new EwebinarApiError(
+        "eWebinar rejected the dashboard's API token. It may have been regenerated or revoked — check the integration settings in eWebinar.",
+        res.status
+      );
+    }
+    if (res.status === 429) {
+      throw new EwebinarApiError(
+        "eWebinar is rate-limiting requests right now. Wait a moment and try again.",
+        res.status
+      );
+    }
+    if (res.status >= 500) {
+      throw new EwebinarApiError("eWebinar's API is temporarily unavailable. Try again shortly.", res.status);
+    }
     const body = await res.text().catch(() => "");
-    throw new Error(`eWebinar API ${path} failed: ${res.status} ${body}`);
+    throw new EwebinarApiError(`eWebinar API request failed (${res.status}). ${body}`.trim(), res.status);
   }
 
   return res.json() as Promise<T>;

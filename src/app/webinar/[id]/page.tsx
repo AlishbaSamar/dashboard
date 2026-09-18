@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllRegistrants, getWebinars } from "@/lib/ewebinar";
+import { EwebinarApiError, getAllRegistrants, getWebinars, type Registrant, type Webinar } from "@/lib/ewebinar";
 import {
   computeKpis,
   filterByPreviousRange,
@@ -15,6 +15,7 @@ import { KpiCards } from "@/components/KpiCards";
 import { RegistrantsTrendChart } from "@/components/RegistrantsTrendChart";
 import { AttendanceStateChart } from "@/components/AttendanceStateChart";
 import { RegistrantsTable } from "@/components/RegistrantsTable";
+import { ErrorState } from "@/components/ErrorState";
 
 const PERIOD_LABEL: Record<Range, string | undefined> = {
   "7d": "previous 7 days",
@@ -46,7 +47,17 @@ export default async function WebinarDetailPage({
   const range = parseRange(query.range);
   const webinarId = Number(id);
 
-  const [allRegistrants, webinars] = await Promise.all([getAllRegistrants(), getWebinars()]);
+  let allRegistrants: Registrant[];
+  let webinars: Webinar[];
+  try {
+    [allRegistrants, webinars] = await Promise.all([getAllRegistrants(), getWebinars()]);
+  } catch (err) {
+    const message =
+      err instanceof EwebinarApiError
+        ? err.message
+        : "Something went wrong loading data from eWebinar. Please try again.";
+    return <ErrorState message={message} backHref="/" />;
+  }
 
   const webinar = webinars.find((w) => Number(w.id) === webinarId);
   const registrants = filterByRange(allRegistrants, range).filter((r) => r.webinarId === webinarId);

@@ -1,4 +1,4 @@
-import { getAllRegistrants } from "@/lib/ewebinar";
+import { EwebinarApiError, getAllRegistrants, type Registrant } from "@/lib/ewebinar";
 import {
   computeKpis,
   filterByPreviousRange,
@@ -17,6 +17,7 @@ import { WebinarBreakdownTable } from "@/components/WebinarBreakdownTable";
 import { AttendanceStateChart } from "@/components/AttendanceStateChart";
 import { TrafficSourceCard } from "@/components/TrafficSourceCard";
 import { RegistrantsTable } from "@/components/RegistrantsTable";
+import { ErrorState } from "@/components/ErrorState";
 
 function parseRange(value: string | string[] | undefined): Range {
   if (value === "7d" || value === "30d" || value === "all") return value;
@@ -37,7 +38,17 @@ export default async function DashboardPage({
   const params = await searchParams;
   const range = parseRange(params.range);
 
-  const allRegistrants = await getAllRegistrants();
+  let allRegistrants: Registrant[];
+  try {
+    allRegistrants = await getAllRegistrants();
+  } catch (err) {
+    const message =
+      err instanceof EwebinarApiError
+        ? err.message
+        : "Something went wrong loading data from eWebinar. Please try again.";
+    return <ErrorState message={message} />;
+  }
+
   const registrants = filterByRange(allRegistrants, range);
 
   const kpis = computeKpis(registrants);
