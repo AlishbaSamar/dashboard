@@ -91,13 +91,33 @@ body {
   display: block;
 }
 
-/* Hides the scrollbar on wide-table scroll containers while keeping
-   touch/trackpad horizontal scrolling fully functional. */
-.scrollbar-none {
-  scrollbar-width: none; /* Firefox */
+/* Wide-table scroll containers: invisible by default (matches touch behavior,
+   where swipe just works with no visible track), and reveals a thin, styled
+   scrollbar on hover so mouse-only desktop users can see and drag it. Touch
+   devices never sustain :hover, so they're unaffected. */
+.scroll-hover {
+  scrollbar-width: none; /* Firefox: hidden by default */
   -ms-overflow-style: none; /* old Edge/IE */
 }
 
-.scrollbar-none::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+.scroll-hover:hover {
+  scrollbar-width: thin; /* Firefox: thin on hover */
+  scrollbar-color: var(--baseline) transparent;
+}
+
+.scroll-hover::-webkit-scrollbar {
+  height: 6px; /* Chrome/Safari: slim horizontal bar */
+}
+
+.scroll-hover::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-hover::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.scroll-hover:hover::-webkit-scrollbar-thumb {
+  background: var(--baseline);
 }

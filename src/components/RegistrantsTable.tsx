@@ -190,7 +190,7 @@ export function RegistrantsTable({
         <p className="text-sm text-text-muted py-10 text-center">No registrants match.</p>
       ) : (
         <>
-          <div className="overflow-x-auto scrollbar-none">
+          <div className="overflow-x-auto scroll-hover">
           <table className="w-full text-sm whitespace-nowrap">
             <thead>
               <tr className="text-left text-xs text-text-muted border-b border-[var(--gridline)]">
